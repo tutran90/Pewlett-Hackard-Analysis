@@ -92,3 +92,64 @@ FROM unique_titles
 GROUP By title
 ORDER BY COUNT(title) DESC;
 
+--Deliverable 2 
+-- write a query to create a Mentorship Eligibility table that holds the
+--employees who are eligible to participate in a mentorship program.
+
+--1. Retrieve the emp_no, first_name, last_name, and birth_date columns 
+--from the Employees table.
+
+SELECT emp_no, 
+     first_name,
+     last_name,
+     birth_date
+FROM employees
+
+--2. Retrieve the from_date and to_date columns from the Department Employee
+-- table.
+
+SELECT from_date,
+     to_date
+FROM dept_emp
+
+
+--3. Retrieve the title column from the Titles table 
+SELECT tile 
+from titles
+
+--4. Use a DISTINCT ON statement to retrieve the first occurrence of the 
+--employee number for each set of rows defined by the ON () clause.
+-- DISTINCT ON statement returns the most recent emp_no if there are duplicates 
+SELECT 
+     DISTINCT ON (emp_no) emp_no, 
+     first_name,
+     last_name,
+     birth_date
+FROM employees
+
+--Create a new table using the INTO clause.
+--Join the Employees and the Department Employee tables on the primary key.
+--Join the Employees and the Titles tables on the primary key.
+--Filter the data on the to_date column to all the current employees, 
+--then filter the data on the birth_date columns to get all the 
+--employees whose birth dates are between January 1, 1965 and December 31, 1965.
+--Order the table by the employee number.
+
+--selecting a date of 9999-01-01 includes all still employed and 
+-- the date range for those eligible to be a mentor 
+SELECT 
+     DISTINCT ON (e.emp_no) e.emp_no, 
+     e.first_name,
+     e.last_name,
+     e.birth_date,
+     d.from_date,
+     d.to_date,
+     t.title
+INTO mentorship_eligibilty
+FROM employees as e
+LEFT JOIN dept_emp as d on e.emp_no = d.emp_no
+LEFT JOIN titles as t on e.emp_no = t.emp_no
+WHERE d.to_date = '9999-01-01' AND e.birth_date BETWEEN '1965-01-01' AND '1965-12-31'
+ORDER BY e.emp_no;
+-- only 1549 employees are eligible for the mentorship program
+
